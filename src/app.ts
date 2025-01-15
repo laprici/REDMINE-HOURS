@@ -37,31 +37,6 @@ const getLaboralesChile = async () => {
 	return filterAllDays.map((day) => format(day, "yyyy-MM-dd"));
 };
 
-async function getTimeEntries(days: number): Promise<Record<string, number>> {
-	const today = new Date();
-	const start = subDays(today, days);
-
-	const { data } = await axios.get(`${URL_REDMINE}time_entries.json`, {
-		headers: { "X-Redmine-API-Key": API_KEY },
-		params: {
-			user_id: USER_ID,
-			from: format(start, "yyyy-MM-dd"),
-			to: format(today, "yyyy-MM-dd"),
-		},
-	});
-
-	return (data.time_entries || []).reduce(
-		(
-			acc: Record<string, number>,
-			entry: { spent_on: string; hours: number }
-		) => {
-			acc[entry.spent_on] = (acc[entry.spent_on] || 0) + entry.hours;
-			return acc;
-		},
-		{}
-	);
-}
-
 const checkHours = async (days: number) => {
 	const today = new Date();
 	const laborales = await getLaboralesChile();
