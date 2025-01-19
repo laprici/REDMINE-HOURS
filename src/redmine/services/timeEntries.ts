@@ -1,10 +1,23 @@
-import { getLaboralesChile } from "./feriados";
-import { getPastDates, formatDate, getDayName } from "../utils/dateUtils";
-import { getRedmineEntries } from "./timeEntries";
-import { config } from "../config/environment";
+import axios from "axios";
+import { config } from "../../config/environment";
+import { formatDate, getDayName, getPastDates } from "../utils/dateUtils";
+
+export async function getRedmineEntries(from: string, to: string) {
+	try {
+		const { data } = await axios.get(
+			`${config.URL_REDMINE}time_entries.json`,
+			{
+				headers: { "X-Redmine-API-Key": config.API_KEY_REDMINE },
+				params: { user_id: config.USER_ID, from, to },
+			}
+		);
+		return data?.time_entries || [];
+	} catch (error: any) {
+		throw new Error("Error al obtener las horas de Redmine");
+	}
+}
 
 export async function checkHours(days: number) {
-	const laborales = await getLaboralesChile();
 	const dates = getPastDates(days);
 
 	const entries = await getRedmineEntries(dates[0], dates[dates.length - 1]);

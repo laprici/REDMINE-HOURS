@@ -1,5 +1,5 @@
 import axios from "axios";
-import { config } from "../config/environment";
+import { config } from "../../config/environment";
 
 export async function sendMessage(message: string) {
 	const url = `https://chat.googleapis.com/v1/spaces/AAAABkKCtSQ/messages?key=${config.WEBHOOK_KEY}&token=${config.WEBHOOK_TOKEN}`;
