@@ -1,15 +1,5 @@
-import { sendMessage, formatMessage } from "./messaging";
+import { CRON_JOB_1, CRON_JOB_2, CRON_JOB_3 } from "../cron/redmineJob";
 
-async function main() {
-	try {
-		const missing = await checkHours(7);
-		if (missing && missing.length > 0) {
-			const message = formatMessage(missing);
-			await sendMessage(message);
-		}
-	} catch (error: any) {
-		console.error(error);
-	}
-}
-
-main();
+CRON_JOB_1.start();
+CRON_JOB_2.start();
+CRON_JOB_3.start();

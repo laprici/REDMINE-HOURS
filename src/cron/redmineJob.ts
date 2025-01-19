@@ -1,11 +1,8 @@
 import { CronJob } from "cron";
 import { checkHours } from "../services/timeEntries";
-import { getLaboralesChile } from "../services/feriados";
 import { getMessage } from "../utils/messages";
 
 const DAYS = 7;
-const MIN_HOURS = 6;
-const MIN_HOURS_FRIDAY = 4;
 
 const execute = async () => {
 	try {

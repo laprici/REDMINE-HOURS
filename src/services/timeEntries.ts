@@ -1,7 +1,6 @@
 import axios from "axios";
 import { config } from "../config/environment";
 import { formatDate, getDayName, getPastDates } from "../utils/dateUtils";
-import { getLaboralesChile } from "./feriados";
 
 export async function getRedmineEntries(from: string, to: string) {
 	try {

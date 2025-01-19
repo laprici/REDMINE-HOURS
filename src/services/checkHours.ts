@@ -1,12 +1,13 @@
 import { getLaboralesChile } from "./feriados";
 import { getPastDates, formatDate, getDayName } from "../utils/dateUtils";
 import { getRedmineEntries } from "./timeEntries";
+import { config } from "../config/environment";
 
-async function checkHours(days: number) {
+export async function checkHours(days: number) {
 	const laborales = await getLaboralesChile();
 	const dates = getPastDates(days);
 
-	const entries = await (dates[0], dates[dates.length - 1]);
+	const entries = await getRedmineEntries(dates[0], dates[dates.length - 1]);
 	const hoursRedmine = entries.reduce(
 		(
 			acc: Record<string, number>,
