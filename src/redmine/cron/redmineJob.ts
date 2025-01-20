@@ -19,7 +19,7 @@ const execute = async () => {
 };
 
 export const CRON_JOB_1 = new CronJob(
-	"04 10 * * 1-5",
+	"08 10 * * 1-5",
 	execute,
 	null,
 	true,
