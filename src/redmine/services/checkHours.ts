@@ -1,35 +1,64 @@
 import { getLaboralesChile } from "./feriados";
-import { getPastDates, formatDate, getDayName } from "../utils/dateUtils";
-import { getRedmineEntries } from "./timeEntries";
 import { config } from "../../config/environment";
+import axios from "axios";
+import { eachDayOfInterval, format, parseISO, subDays } from "date-fns";
+import { es } from "date-fns/locale";
 
-export async function checkHours(days: number) {
+export const checkHours = async (days: number) => {
+	const today =
+		new Date().getHours() !== 9 ? new Date() : subDays(new Date(), 1);
 	const laborales = await getLaboralesChile();
-	const dates = getPastDates(days);
+	const start = subDays(today, days);
+	const dates = eachDayOfInterval({ start, end: today }).map((date) =>
+		format(date, "yyyy-MM-dd")
+	);
 
-	const entries = await getRedmineEntries(dates[0], dates[dates.length - 1]);
+	const { data } = await axios.get(`${config.URL_REDMINE}time_entries.json`, {
+		headers: {
+			"X-Redmine-API-Key": config.API_KEY_REDMINE,
+		},
+		params: {
+			user_id: config.USER_ID,
+			from: format(start, "yyyy-MM-dd"),
+			to: format(today, "yyyy-MM-dd"),
+		},
+	});
+
+	const entries = data?.time_entries || [];
 	const hoursRedmine = entries.reduce(
 		(
 			acc: Record<string, number>,
-			{ spent_on, hours }: { spent_on: string; hours: number }
+			entry: { spent_on: string; hours: number }
 		) => {
-			acc[spent_on] = (acc[spent_on] || 0) + hours;
+			const { spent_on, hours } = entry;
+			if (!acc[spent_on]) {
+				acc[spent_on] = 0;
+			}
+			acc[spent_on] += hours;
 			return acc;
 		},
 		{}
 	);
 
-	return dates
+	const missing = dates
 		.filter((date) => {
-			const dayOfWeek = new Date(date).getDay();
-			const minHours =
-				dayOfWeek === 5 ? config.MIN_HOURS_FRIDAY : config.MIN_HOURS;
-			return !hoursRedmine[date] || hoursRedmine[date] < minHours;
+			const day = parseISO(date).getDay();
+			return (
+				(!hoursRedmine[date] && laborales.includes(date)) ||
+				(day == 5 && hoursRedmine[date] <= config.MIN_HOURS_FRIDAY) ||
+				(day != 5 && hoursRedmine[date] <= config.MIN_HOURS)
+			);
 		})
-		.map((date) => ({
-			date: formatDate(date),
-			hours: hoursRedmine[date] || 0,
-			day: getDayName(date),
-			icon: hoursRedmine[date] ? "⌛" : "🚨",
-		}));
-}
+		.map((date) => {
+			const dateFormatDate = parseISO(date);
+			const day = format(dateFormatDate, "eeee", { locale: es });
+			const icon = hoursRedmine[date] ? "⌛" : "🚨";
+			return {
+				date: format(dateFormatDate, "dd-MM-yyyy"),
+				hours: hoursRedmine[date] || 0,
+				day,
+				icon,
+			};
+		});
+	return missing;
+};

@@ -2,7 +2,7 @@ import axios from "axios";
 import { config } from "../../config/environment";
 
 export async function sendMessage(message: string) {
-	const url = `https://chat.googleapis.com/v1/spaces/AAAABkKCtSQ/messages?key=${config.WEBHOOK_KEY}&token=${config.WEBHOOK_TOKEN}`;
+	const url = `https://chat.googleapis.com/v1/spaces/AAAABkKCtSQ/messages?key=${config.WEBHOOK_KEY_REDMINE}&token=${config.WEBHOOK_TOKEN_REDMINE}`;
 	try {
 		const response = await axios.post(
 			url,
@@ -10,12 +10,12 @@ export async function sendMessage(message: string) {
 			{ headers: { "Content-Type": "application/json" } }
 		);
 		console.log("Mensaje enviado:", response.data);
-	} catch (error: any) {
+	} catch (error) {
 		console.error(error);
 	}
 }
 
-export function formatMessage(missing: Record<string, any>[]): string {
+export function formatMessage(missing: any[]): string {
 	const intro = `*Nooooooo!* 🚨 \nFaltan horitas por agregar\n\n`;
 	const details = missing.map(({ date, hours, day, icon }) =>
 		hours === 0

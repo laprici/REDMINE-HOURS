@@ -1,6 +1,6 @@
 export const config = {
 	URL_REDMINE: process.env.URL_REDMINE!,
-	API_KEY_REDMINE: process.env.API_KEY!,
+	API_KEY_REDMINE: process.env.API_KEY_REDMINE!,
 	USER_ID: process.env.USER_ID!,
 	WEBHOOK_KEY_REDMINE: process.env.WEBHOOK_KEY_REDMINE!,
 	WEBHOOK_TOKEN_REDMINE: process.env.WEBHOOK_TOKEN_REDMINE!,

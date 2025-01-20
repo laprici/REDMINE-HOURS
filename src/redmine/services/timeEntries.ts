@@ -4,6 +4,8 @@ import { formatDate, getDayName, getPastDates } from "../utils/dateUtils";
 
 export async function getRedmineEntries(from: string, to: string) {
 	try {
+		console.log("Obteniendo horas de Redmine...");
+		console.log({ user_id: config.USER_ID, from, to });
 		const { data } = await axios.get(
 			`${config.URL_REDMINE}time_entries.json`,
 			{
@@ -12,7 +14,8 @@ export async function getRedmineEntries(from: string, to: string) {
 			}
 		);
 		return data?.time_entries || [];
-	} catch (error: any) {
+	} catch (error) {
+		// console.error(error);
 		throw new Error("Error al obtener las horas de Redmine");
 	}
 }

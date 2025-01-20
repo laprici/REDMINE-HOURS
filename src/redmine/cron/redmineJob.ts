@@ -1,6 +1,7 @@
 import { CronJob } from "cron";
 import { checkHours } from "../services/timeEntries";
 import { getMessage } from "../utils/messages";
+import { sendMessage } from "../services/senMessage";
 
 const DAYS = 7;
 
@@ -10,6 +11,7 @@ const execute = async () => {
 
 		if (missing.length > 0) {
 			const message = getMessage(missing);
+			sendMessage(message);
 		}
 	} catch (error) {
 		console.error("Error al ejecutar el cron job:", error);
@@ -17,7 +19,7 @@ const execute = async () => {
 };
 
 export const CRON_JOB_1 = new CronJob(
-	"15 9 * * 1-5",
+	"04 10 * * 1-5",
 	execute,
 	null,
 	true,
